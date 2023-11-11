@@ -11,12 +11,12 @@ node {
       sh 'printenv'
     }
     stage('Check docker build'){
-        if(env.branch == 'develop')  {
+        if(env.BRANCH_NAME == 'develop')  {
             app = docker.build('satt294/my-home-repo')
         }
     }
     stage('Docker build'){
-        if(env.branch == 'release')  {
+        if(env.BRANCH_NAME == 'release')  {
             app = docker.build('satt294/my-home-repo')
         }
     }
