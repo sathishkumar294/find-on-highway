@@ -1,20 +1,29 @@
 node {
-    def app
-    stage('Clone repository') {
-        checkout scm
+  try {
+    stage('Checkout') {
+      checkout scm
     }
-    stage('Build image') {
-        app = docker.build("satt294/my-home-repo")
+    stage('Environment') {
+      sh 'git --version'
+      echo "Branch: ${env.BRANCH_NAME}"
+      sh 'docker -v'
+      sh 'printenv'
     }
-    stage('Test image') {
-        app.inside {
-            sh 'echo Tests passed'
+    stage('Check docker build'){
+        if(env.branch == 'develop')  {
+            sh 'docker buildx build -t found-on-highway -f Dockerfile --no-cache .'
         }
     }
-    stage('Push image') {
-        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-        }
+    stage('Deploy'){
+      if(env.BRANCH_NAME == 'release'){
+        sh 'docker buildx build -t found-on-highway --no-cache .'
+        sh 'docker tag found-on-highway satt294/my-home-repo'
+        sh 'docker push satt294/my-home-repo'
+        sh 'docker rmi -f found-on-highway satt294/my-home-repo'
+      }
     }
+  }
+  catch (err) {
+    throw err
+  }
 }
