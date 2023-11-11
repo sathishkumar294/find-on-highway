@@ -1,5 +1,6 @@
 node {
   try {
+    def app
     stage('Checkout') {
       checkout scm
     }
@@ -11,15 +12,15 @@ node {
     }
     stage('Check docker build'){
         if(env.branch == 'develop')  {
-            sh 'docker build -t found-on-highway -f Dockerfile --no-cache .'
+            app = docker.build('satt294/my-home-repo')
         }
     }
     stage('Deploy'){
       if(env.BRANCH_NAME == 'release'){
-        sh 'docker build --tag find-on-highway .'
-        sh 'docker tag found-on-highway registry.hub.docker.com/satt294/my-home-repo'
-        sh 'docker push registry.hub.docker.com/satt294/my-home-repo'
-        sh 'docker rmi -f found-on-highway registry.hub.docker.com/satt294/my-home-repo'
+         docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
       }
     }
   }
