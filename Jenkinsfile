@@ -15,6 +15,11 @@ node {
             app = docker.build('satt294/my-home-repo')
         }
     }
+    stage('Docker build'){
+        if(env.branch == 'release')  {
+            app = docker.build('satt294/my-home-repo')
+        }
+    }
     stage('Deploy'){
       if(env.BRANCH_NAME == 'release'){
          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
