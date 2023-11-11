@@ -10,4 +10,6 @@ CMD [ "npm", "run", "build" ]
 FROM nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+RUN pwd
+RUN ls -tlra
 CMD ["nginx", "-g", "daemon off;"]
