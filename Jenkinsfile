@@ -16,7 +16,7 @@ node {
     }
     stage('Deploy'){
       if(env.BRANCH_NAME == 'release'){
-        sh 'docker buildx build -t found-on-highway --no-cache .'
+        sh 'docker buildx build --tag find-on-highway --no-cache .'
         sh 'docker tag found-on-highway satt294/my-home-repo'
         sh 'docker push satt294/my-home-repo'
         sh 'docker rmi -f found-on-highway satt294/my-home-repo'
